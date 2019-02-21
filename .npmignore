@@ -1,0 +1,8 @@
+test
+seeders
+*.tgz
+.nyc_output
+config
+test*
+test-results.xml
+re-az-authentication*.tgz
