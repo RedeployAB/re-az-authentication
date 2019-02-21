@@ -6,6 +6,10 @@
   "scripts": {
     "test": "nyc mocha --timeout 10000"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RedeployAB/re-az-authentication.git"
+  },
   "keywords": [
     "Authentication",
     "Azure",
@@ -14,6 +18,10 @@
   ],
   "author": "Karl Wallenius <karl.wallenius@redeploy.se> (https://redeploy.se/)",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/RedeployAB/re-az-authentication/issues"
+  },
+  "homepage": "https://github.com/RedeployAB/re-az-authentication#readme",
   "dependencies": {
     "webreq": "^0.2.0"
   },
@@ -22,5 +30,8 @@
     "mocha": "^6.0.0",
     "nyc": "^13.3.0",
     "sinon": "^7.2.4"
+  },
+  "engines": {
+    "node": ">=8.5.0"
   }
 }
