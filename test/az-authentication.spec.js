@@ -47,9 +47,9 @@ describe('AZAuthentication', () => {
 
     it('should handle authentication with a Service Princial, environment variables set', () => {
 
-      process.env["CLIENT_ID"] = 'aaaa';
-      process.env["CLIENT_SECRET"] = 'abcdefg';
-      process.env["TENANT_ID"] = 'bbbb';
+      process.env['CLIENT_ID'] = 'aaaa';
+      process.env['CLIENT_SECRET'] = 'abcdefg';
+      process.env['TENANT_ID'] = 'bbbb';
 
       sinon.stub(webreq, 'post').resolves({ statusCode: 200, body: { access_token: 'abcdef' }});
 
@@ -61,9 +61,9 @@ describe('AZAuthentication', () => {
 
     it('should handle authentication with a Service Princial, environment variables set, with options.resource', () => {
 
-      process.env["CLIENT_ID"] = 'aaaa';
-      process.env["CLIENT_SECRET"] = 'abcdefg';
-      process.env["TENANT_ID"] = 'bbbb';
+      process.env['CLIENT_ID'] = 'aaaa';
+      process.env['CLIENT_SECRET'] = 'abcdefg';
+      process.env['TENANT_ID'] = 'bbbb';
 
       sinon.stub(webreq, 'post').resolves({ statusCode: 200, body: { access_token: 'abcdef' }});
 
@@ -75,9 +75,9 @@ describe('AZAuthentication', () => {
 
     it('should handle authentication with a Service Princial, environment variables set, with options.resource', () => {
 
-      process.env["CLIENT_ID"] = 'aaaa';
-      process.env["CLIENT_SECRET"] = 'abcdefg';
-      process.env["TENANT_ID"] = 'bbbb';
+      process.env['CLIENT_ID'] = 'aaaa';
+      process.env['CLIENT_SECRET'] = 'abcdefg';
+      process.env['TENANT_ID'] = 'bbbb';
 
       sinon.stub(webreq, 'post').resolves({ statusCode: 200, body: { access_token: 'abcdef' }});
 
@@ -178,8 +178,8 @@ describe('AZAuthentication', () => {
 
     it('should handle autentication with MSI', () => {
 
-      process.env["MSI_ENDPOINT"] = 'localhost:44343';
-      process.env["MSI_SECRET"] = 'abcdefg';
+      process.env['MSI_ENDPOINT'] = 'localhost:44343';
+      process.env['MSI_SECRET'] = 'abcdefg';
 
       sinon.stub(webreq, 'get').resolves({ statusCode: 200, body: { access_token: 'abcdef' }});
 
@@ -191,8 +191,8 @@ describe('AZAuthentication', () => {
 
     it('should handle autentication with MSI, with options.resource', () => {
 
-      process.env["MSI_ENDPOINT"] = 'localhost:44343';
-      process.env["MSI_SECRET"] = 'abcdefg';
+      process.env['MSI_ENDPOINT'] = 'localhost:44343';
+      process.env['MSI_SECRET'] = 'abcdefg';
 
       let options = { resource: 'https://vault.azure.net' };
 
@@ -206,8 +206,8 @@ describe('AZAuthentication', () => {
 
     it('should handle autentication with MSI, with options.type', () => {
 
-      process.env["MSI_ENDPOINT"] = 'localhost:44343';
-      process.env["MSI_SECRET"] = 'abcdefg';
+      process.env['MSI_ENDPOINT'] = 'localhost:44343';
+      process.env['MSI_SECRET'] = 'abcdefg';
 
       let options = { type: 'keyvault' };
 
@@ -219,10 +219,37 @@ describe('AZAuthentication', () => {
         });
     });
 
+    it('should handle user assigned identity with MSI_CLIENT_ID set', () => {
+
+      process.env['MSI_ENDPOINT'] = 'localhost:44343';
+      process.env['MSI_SECRET'] = 'abcdefg';
+      process.env['MSI_CLIENT_ID'] = '12345';
+
+      sinon.stub(webreq, 'get').resolves({ statusCode: 200, body: { access_token: 'abcdef' }});
+
+      return AZAuthentication.authenticateWithMSI()
+        .then(credentials => {
+          expect(credentials.access_token).to.equal('abcdef');
+        });
+    });
+
+    it('should handle user assigned identity with options.clientId', () => {
+
+      process.env['MSI_ENDPOINT'] = 'localhost:44343';
+      process.env['MSI_SECRET'] = 'abcdefg';
+
+      sinon.stub(webreq, 'get').resolves({ statusCode: 200, body: { access_token: 'abcdef' }});
+
+      return AZAuthentication.authenticateWithMSI({clientId: '12345'})
+      .then(credentials => {
+        expect(credentials.access_token).to.equal('abcdef');
+      });
+    });
+
     it('should throw if the request does not return statusCode 200', () => {
 
-      process.env["MSI_ENDPOINT"] = 'localhost:44343';
-      process.env["MSI_SECRET"] = 'abcdefg';
+      process.env['MSI_ENDPOINT'] = 'localhost:44343';
+      process.env['MSI_SECRET'] = 'abcdefg';
 
       sinon.stub(webreq, 'get').resolves({ statusCode: 401, body: ''});
 
@@ -246,8 +273,8 @@ describe('AZAuthentication', () => {
 
     it('should throw if request for authentication failed', () => {
 
-      process.env["MSI_ENDPOINT"] = 'localhost:44343';
-      process.env["MSI_SECRET"] = 'abcdefg';
+      process.env['MSI_ENDPOINT'] = 'localhost:44343';
+      process.env['MSI_SECRET'] = 'abcdefg';
 
       sinon.stub(webreq, 'get').rejects(new Error('Failed to authenticate.'));
 
