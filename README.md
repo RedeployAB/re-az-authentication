@@ -80,6 +80,16 @@ try {
 ```
 
 **Managed Identity (MSI)**
+
+This requries that the Azure Resource has **Identity** enabled.
+This sets the environment variables `MSI_ENDPOINT` and `MSI_SECRET`.
+
+The default behaviour is using system assigned identity.
+
+To use user assigned identity either set `MSI_CLIENT_ID` or pass
+`clientId: <msi-client-id>` in the options.
+
+*System assigned*
 ```js
 const AZAuthentication = require('re-az-authentication');
 
@@ -100,6 +110,38 @@ AZAuthentication.authenticateWithMSI({type: 'keyvault'})
 let credentials, secrets;
 try {
   credentials = await AZAuthentication.authenticateWithMSI({resource: 'https://vault.azure.net'});
+  let headers: { Authorization: `Bearer ${credentials.access_token}`}
+  secrets = await webreq.get('https://<vault>.vault.azure.net/secrets?api-version=7.0', { headers: headers });
+} catch (error) {
+  console.log(error);
+}
+```
+
+*User assigned*
+```js
+const AZAuthentication = require('re-az-authentication');
+
+// Promise chaining.
+// Optionally instead of passing clientId, set an environment variable,
+// MSI_CLIENT_ID.
+AZAuthentication.authenticateWithMSI({type: 'keyvault', clientId: '<ID>'})
+  .then(credentials => {
+    let headers: { Authorization: `Bearer ${credentials.access_token}`}
+    return webreq.get('https://<vault>.vault.azure.net/secrets?api-version=7.0', { headers: headers });
+  })
+  .then(secrets => {
+      // And so on.
+  })
+  .catch(error => {
+      console.log(error);
+  });
+
+// Async/Await.
+// Optionally instead of passing clientId, set an environment variable,
+// MSI_CLIENT_ID.
+let credentials, secrets;
+try {
+  credentials = await AZAuthentication.authenticateWithMSI({resource: 'https://vault.azure.net', clientId: '<ID>'});
   let headers: { Authorization: `Bearer ${credentials.access_token}`}
   secrets = await webreq.get('https://<vault>.vault.azure.net/secrets?api-version=7.0', { headers: headers });
 } catch (error) {

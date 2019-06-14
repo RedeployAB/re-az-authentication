@@ -52,3 +52,4 @@ test-results.xml
 testdata
 re-az-authentication*.tgz
 test/mockdata/test.csv
+.DS_Store
