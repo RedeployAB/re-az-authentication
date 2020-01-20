@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.2.2
+
+* Updated dev dependencies.
+* Updated to `webreq@0.6.0`.
+
 ## v0.2.1
 
 * Added TypeScript definition file.
