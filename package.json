@@ -1,6 +1,6 @@
 {
   "name": "re-az-authentication",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Authenticate with the Azure REST API.",
   "main": "lib/az-authentication.js",
   "scripts": {
@@ -23,13 +23,13 @@
   },
   "homepage": "https://github.com/RedeployAB/re-az-authentication#readme",
   "dependencies": {
-    "webreq": "^0.4.0"
+    "webreq": "^0.6.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^6.2.0",
+    "mocha": "^6.2.2",
     "nyc": "^14.1.1",
-    "sinon": "^7.4.0"
+    "sinon": "^7.5.0"
   },
   "engines": {
     "node": ">=8.5.0"
