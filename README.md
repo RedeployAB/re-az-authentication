@@ -27,7 +27,7 @@ npm install re-az-authentication
 
 **Service Principals**
 
-**With environment variables CLIENT_ID, CLIENT_SECRET and TENANT_ID set*
+**With environment variables AZURE_CLIENT_ID, AZURE_CLIENT_SECRET and AZURE_TENANT_ID set*
 ```js
 const AZAuthentication = require('re-az-authentication');
 
@@ -61,7 +61,7 @@ const AZAuthentication = require('re-az-authentication');
 
 let credentials, secrets;
 try {
-  credentials = await AZAuthentication.authenticateWithServicePrincipal({resource: 'https://vault.azure.net'});
+  credentials = await AZAuthentication.authenticateWithServicePrincipal({ resource: 'https://vault.azure.net' });
   let headers: { Authorization: `Bearer ${credentials.access_token}`}
   secrets = await webreq.get('https://<vault>.vault.azure.net/secrets?api-version=7.0', { headers: headers });
 } catch (error) {
@@ -71,11 +71,49 @@ try {
 // Or with a predefined type.
 let credentials, secrets;
 try {
-  credentials = await AZAuthentication.authenticateWithServicePrincipal({type: 'keyvault'});
+  credentials = await AZAuthentication.authenticateWithServicePrincipal({ type: 'keyvault' });
   let headers: { Authorization: `Bearer ${credentials.access_token}`}
   secrets = await webreq.get('https://<vault>.vault.azure.net/secrets?api-version=7.0', { headers: headers });
 } catch (error) {
   console.log(error);
+}
+```
+
+*To specify Azure Cloud to authenticate with, specify it in `options`*
+```js
+// Supported Azure Clouds:
+//
+// 'azure' (default)
+// 'azureUSGovernment'
+// 'azureGermany'
+// 'azureChina'
+//
+// or:
+//
+// AZAuthentication.AZURE (default)
+// AZAuthentication.AZURE_US_GOVERNMENT
+// AZAuthentication.AZURE_GERMANY
+// AZAuthentication.AZURE_CHINA
+
+const AZAuthentication = require('re-az-authentication');
+
+let credentials;
+
+try {
+  credentials = await AZAuthentication.authenticateWithServicePrincipal({ environment: 'azureGermany' });
+  let headers: { Authorization: `Bearer ${credentials.access_token}`}
+  subscriptions = await webreq.get('https://management.azure.com/subscriptions?api-version=2016-06-01', { headers: headers });
+} catch (errpr) {
+  console.log(error)
+}
+
+// Alternative.
+try {
+  credentials = await AZAuthentication.authenticateWithServicePrincipal({ environment: AZAuthentication.AZURE_GERMANY });
+  let headers: { Authorization: `Bearer ${credentials.access_token}`}
+  subscriptions = await webreq.get('https://management.azure.com/subscriptions?api-version=2016-06-01', { headers: headers });
+} catch (errpr) {
+  console.log(error)
 }
 ```
 
@@ -109,7 +147,7 @@ AZAuthentication.authenticateWithMSI({type: 'keyvault'})
 // Async/Await.
 let credentials, secrets;
 try {
-  credentials = await AZAuthentication.authenticateWithMSI({resource: 'https://vault.azure.net'});
+  credentials = await AZAuthentication.authenticateWithMSI({ resource: 'https://vault.azure.net' });
   let headers: { Authorization: `Bearer ${credentials.access_token}`}
   secrets = await webreq.get('https://<vault>.vault.azure.net/secrets?api-version=7.0', { headers: headers });
 } catch (error) {
@@ -141,9 +179,45 @@ AZAuthentication.authenticateWithMSI({type: 'keyvault', clientId: '<ID>'})
 // MSI_CLIENT_ID.
 let credentials, secrets;
 try {
-  credentials = await AZAuthentication.authenticateWithMSI({resource: 'https://vault.azure.net', clientId: '<ID>'});
+  credentials = await AZAuthentication.authenticateWithMSI({ resource: 'https://vault.azure.net', clientId: '<ID>' });
   let headers: { Authorization: `Bearer ${credentials.access_token}`}
   secrets = await webreq.get('https://<vault>.vault.azure.net/secrets?api-version=7.0', { headers: headers });
+} catch (error) {
+  console.log(error);
+}
+```
+
+*To specify Azure Cloud to authenticate with, specify it in `options`*
+```js
+// Supported Azure Clouds:
+//
+// 'azure' (default)
+// 'azureUSGovernment'
+// 'azureGermany'
+// 'azureChina'
+//
+// or:
+//
+// AZAuthentication.AZURE (default)
+// AZAuthentication.AZURE_US_GOVERNMENT
+// AZAuthentication.AZURE_GERMANY
+// AZAuthentication.AZURE_CHINA
+const AZAuthentication = require('re-az-authentication');
+
+let credentials, secrets;
+try {
+  credentials = await AZAuthentication.authenticateWithMSI({ environment: 'azureGermany' });
+  let headers: { Authorization: `Bearer ${credentials.access_token}`}
+  subscriptions = await webreq.get('https://management.azure.com/subscriptions?api-version=2016-06-01', { headers: headers });
+} catch (error) {
+  console.log(error);
+}
+
+// Alternative.
+try {
+  credentials = await AZAuthentication.authenticateWithMSI({ environment: AZAuthentication.AZURE_GERMANY });
+  let headers: { Authorization: `Bearer ${credentials.access_token}`}
+  subscriptions = await webreq.get('https://management.azure.com/subscriptions?api-version=2016-06-01', { headers: headers });
 } catch (error) {
   console.log(error);
 }

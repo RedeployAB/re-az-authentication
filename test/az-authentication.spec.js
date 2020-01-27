@@ -10,19 +10,34 @@ describe('AZAuthentication', () => {
 
   describe('class instantiation', () => {
 
-    it('should set the deault resource if no parameters are provided', () => {
+    it('should set the deault resource and environment if no parameters are provided', () => {
       let azAuth = new AZAuthentication();
-      expect(azAuth.resource).to.equal('https://management.core.windows.net/');
+      expect(azAuth.resource).to.equal('https://management.azure.com/');
+      expect(azAuth.authenticationURL).to.equal('https://login.microsoft.com');
     });
 
     it('should set resource from options.resource', () => {
       let azAuth = new AZAuthentication({ resource: 'https://vault.azure.net' });
       expect(azAuth.resource).to.equal('https://vault.azure.net');
+      expect(azAuth.authenticationURL).to.equal('https://login.microsoft.com');
     });
 
     it('should set resource from options.type', () => {
       let azAuth = new AZAuthentication({ type: 'keyvault' });
       expect(azAuth.resource).to.equal('https://vault.azure.net');
+      expect(azAuth.authenticationURL).to.equal('https://login.microsoft.com');
+    });
+
+    it('should set resource and environment if provided', () => {
+      let azAuth = new AZAuthentication({ type: 'arm', environment: AZAuthentication.AZURE_US_GOVERNMENT });
+      expect(azAuth.resource).to.equal('https://management.usgovcloudapi.net/');
+      expect(azAuth.authenticationURL).to.equal('https://login.microsoftonline.us');
+    });
+
+    it('should set resource and environment if provided (text)', () => {
+      let azAuth = new AZAuthentication({ type: 'keyvault', environment: AZAuthentication.AZURE_US_GOVERNMENT });
+      expect(azAuth.resource).to.equal('https://vault.usgovcloudapi.net');
+      expect(azAuth.authenticationURL).to.equal('https://login.microsoftonline.us');
     });
 
     it('should throw if options.type is used, and no such value exists', (done) => {
@@ -31,7 +46,7 @@ describe('AZAuthentication', () => {
     });
   });
 
-  describe('autneticateServicePrincipal()', () => {
+  describe('authenticateServicePrincipal()', () => {
 
     let env;
 
@@ -47,9 +62,9 @@ describe('AZAuthentication', () => {
 
     it('should handle authentication with a Service Princial, environment variables set', () => {
 
-      process.env['CLIENT_ID'] = 'aaaa';
-      process.env['CLIENT_SECRET'] = 'abcdefg';
-      process.env['TENANT_ID'] = 'bbbb';
+      process.env['AZURE_CLIENT_ID'] = 'aaaa';
+      process.env['AZURE_CLIENT_SECRET'] = 'abcdefg';
+      process.env['AZURE_TENANT_ID'] = 'bbbb';
 
       sinon.stub(webreq, 'post').resolves({ statusCode: 200, body: { access_token: 'abcdef' }});
 
@@ -61,9 +76,9 @@ describe('AZAuthentication', () => {
 
     it('should handle authentication with a Service Princial, environment variables set, with options.resource', () => {
 
-      process.env['CLIENT_ID'] = 'aaaa';
-      process.env['CLIENT_SECRET'] = 'abcdefg';
-      process.env['TENANT_ID'] = 'bbbb';
+      process.env['AZURE_CLIENT_ID'] = 'aaaa';
+      process.env['AZURE_CLIENT_SECRET'] = 'abcdefg';
+      process.env['AZURE_TENANT_ID'] = 'bbbb';
 
       sinon.stub(webreq, 'post').resolves({ statusCode: 200, body: { access_token: 'abcdef' }});
 
@@ -75,9 +90,9 @@ describe('AZAuthentication', () => {
 
     it('should handle authentication with a Service Princial, environment variables set, with options.resource', () => {
 
-      process.env['CLIENT_ID'] = 'aaaa';
-      process.env['CLIENT_SECRET'] = 'abcdefg';
-      process.env['TENANT_ID'] = 'bbbb';
+      process.env['AZURE_CLIENT_ID'] = 'aaaa';
+      process.env['AZURE_CLIENT_SECRET'] = 'abcdefg';
+      process.env['AZURE_TENANT_ID'] = 'bbbb';
 
       sinon.stub(webreq, 'post').resolves({ statusCode: 200, body: { access_token: 'abcdef' }});
 
@@ -135,7 +150,7 @@ describe('AZAuthentication', () => {
       return AZAuthentication.authenticateWithServicePrincipal()
         .then(() => { })
         .catch(err => {
-          expect(err.message).to.equal('CLIENT_ID, CLIENT_SECRET and TENANT_ID must be set or provided.')
+          expect(err.message).to.equal('AZURE_CLIENT_ID, AZURE_CLIENT_SECRET and AZURE_TENANT_ID must be set or provided.')
         });
     });
 
@@ -176,7 +191,7 @@ describe('AZAuthentication', () => {
       webreq.get.restore();
     });
 
-    it('should handle autentication with MSI', () => {
+    it('should handle authentication with MSI', () => {
 
       process.env['MSI_ENDPOINT'] = 'localhost:44343';
       process.env['MSI_SECRET'] = 'abcdefg';
@@ -189,7 +204,7 @@ describe('AZAuthentication', () => {
         });
     });
 
-    it('should handle autentication with MSI, with options.resource', () => {
+    it('should handle authentication with MSI, with options.resource', () => {
 
       process.env['MSI_ENDPOINT'] = 'localhost:44343';
       process.env['MSI_SECRET'] = 'abcdefg';
@@ -204,12 +219,26 @@ describe('AZAuthentication', () => {
         });
     });
 
-    it('should handle autentication with MSI, with options.type', () => {
+    it('should handle authentication with MSI, with options.type', () => {
 
       process.env['MSI_ENDPOINT'] = 'localhost:44343';
       process.env['MSI_SECRET'] = 'abcdefg';
 
       let options = { type: 'keyvault' };
+
+      sinon.stub(webreq, 'get').resolves({ statusCode: 200, body: { access_token: 'abcdef' }});
+
+      return AZAuthentication.authenticateWithMSI(options)
+        .then(credentials => {
+          expect(credentials.access_token).to.equal('abcdef');
+        });
+    });
+
+    it('should handle authentication with MSI, with options.environment', () => {
+      process.env['MSI_ENDPOINT'] = 'localhost:44343';
+      process.env['MSI_SECRET'] = 'abcdefg';
+
+      let options = { environment: 'azureUSGovernment' };
 
       sinon.stub(webreq, 'get').resolves({ statusCode: 200, body: { access_token: 'abcdef' }});
 
