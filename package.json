@@ -1,6 +1,6 @@
 {
   "name": "re-az-authentication",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Authenticate with the Azure REST API.",
   "main": "lib/az-authentication.js",
   "scripts": {

@@ -6,12 +6,13 @@ declare class AZAuthentication {
     /**
      * Authenticate with Client ID and Client Secret of a Service Principal.
      * If not parameters are passed environment variables will be checked.
-     * @param clientId Client ID of Service Principal. Default: Checks CLIENT_ID.
-     * @param clientSecret Client Secret of Service Principal. Default: Checks CLIENT_SECRET.
-     * @param tenantId Tenant ID of Service Principal. Default: Checks TENANT_ID.
+     * @param clientId Client ID of Service Principal. Default: Checks AZURE_CLIENT_ID.
+     * @param clientSecret Client Secret of Service Principal. Default: Checks AZURE_CLIENT_SECRET.
+     * @param tenantId Tenant ID of Service Principal. Default: Checks AZURE_TENANT_ID.
      * @param options Options object.
      * @param options.resource Specify which Azure Resource to authenticate with.
      * @param options.type Specify which Azure Resource to authenticate with (predefined values).
+     * @param options.environment Azure Environment to authenticate with (azure, azureUSGovernment, azureGermany or azureChina).
      */
     static authenticateWithServicePrincipal(
         clientId: string,
@@ -29,6 +30,7 @@ declare class AZAuthentication {
      * @param options.clientId Client ID of user assigned identity.
      * @param options.resource Specify which Azure Resource to authenticate with.
      * @param options.type Specify which Azure Resource to authenticate with (predefined values).
+     * @param options.environment Azure Environment to authenticate with (azure, azureUSGovernment, azureGermany or azureChina).
      */
     static authenticateWithMSI(options?: AZAuthentication.ManagedIdentityOptions): Promise<any>
 
@@ -54,6 +56,13 @@ declare namespace AZAuthentication {
             | 'eventhubs'
             | 'servicebus'
             | 'storage';
+        /**
+         * Specify which Azure Environment to authenticate with.
+         */
+        environment?: 'azure'
+            | 'azureUSGovernment'
+            | 'azureGermany'
+            | 'azureChina';
     }
     
     interface ManagedIdentityOptions extends ServicePrincipalOptions {
