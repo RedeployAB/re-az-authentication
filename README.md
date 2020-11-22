@@ -1,6 +1,8 @@
 # re-az-authentication
 
-Authenticate with the Azure REST API.
+![Test](https://github.com/RedeployAB/re-az-authentication/workflows/Test/badge.svg)
+
+> Authenticate with the Azure REST API.
 
 **Content**
 
